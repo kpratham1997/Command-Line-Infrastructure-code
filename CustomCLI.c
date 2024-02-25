@@ -590,8 +590,9 @@ int main(void) {
     
     /* Process Example Command */
     
-    CLIProcessCommand("help", writeBuffer, sizeof(writeBuffer));
+    	CLIProcessCommand("help", writeBuffer, sizeof(writeBuffer));
 	CLIProcessCommand("set temp 50", writeBuffer, sizeof(writeBuffer));
+	CLIProcessCommand("get temp", writeBuffer, sizeof(writeBuffer));
     
     return 0;
 }
