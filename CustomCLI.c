@@ -572,30 +572,55 @@ const char *pcReturn = NULL;
 
 /* Main Function (For Demonstration) */
 int main(void) {
+    CLIRegisterCommand(&xHelpCommand); // Register help command initially
+    printf("Welcome to Custom CLI\n");
+    printf("\n");
+    printf("Enter 'help' to get a list of registered command.\n");
+    printf("Enter 'help {commandname}' to know more about a registered command.\n");
 
-    /* Register Help Command */
+    // Shell interface loop
+    char userInput[50];
+    while (1) {
+        printf("Enter a command: ");
+        fgets(userInput, sizeof(userInput), stdin);
 
-    CLIRegisterCommand(&xHelpCommand);
-    CLIRegisterCommand(&xSetCommand);
-	CLIRegisterCommand(&xGetCommand);
-	
-	/*
-	CLIRegisterCommand(&xACommand);
-	CLIRegisterCommand(&xBCommand);
-	CLIRegisterCommand(&xCCommand);
-	CLIRegisterCommand(&xDCommand);
-	CLIRegisterCommand(&xECommand);
-	CLIRegisterCommand(&xFCommand);
-	CLIRegisterCommand(&xGCommand);
-	CLIRegisterCommand(&xHCommand);
+        // Remove newline character if present
+        size_t len = strlen(userInput);
+        if (len > 0 && userInput[len - 1] == '\n') {
+            userInput[len - 1] = '\0';
+        }
 
-	*/
-    
-    /* Process Example Command */
-    
-    	CLIProcessCommand("help", writeBuffer, sizeof(writeBuffer));
-	CLIProcessCommand("set temp 50", writeBuffer, sizeof(writeBuffer));
-	CLIProcessCommand("get temp", writeBuffer, sizeof(writeBuffer));
-    
+        if (strncmp(userInput, "register", 8) == 0) {
+            // Check if user is admin
+            printf("Enter admin password: ");
+            char adminPassword[20];
+            scanf("%s", adminPassword);
+            getchar();
+
+            if (strcmp(adminPassword, IMPORTANT) != 0) {
+                printf("Invalid admin password. Command registration denied.\n");
+                continue; // Go back to the beginning of the loop
+            }
+
+            // User wants to register a command
+            char commandName[20];
+            sscanf(userInput, "%*s %s", commandName);
+
+            if (strncmp(commandName, "set", 3) == 0) {
+                CLIRegisterCommand(&xSetCommand);
+                printf("Command 'set' registered successfully.\n");
+            } else if (strncmp(commandName, "get", 3) == 0) {
+                CLIRegisterCommand(&xGetCommand);
+                printf("Command 'get' registered successfully.\n");
+            } else {
+                printf("Invalid command name. No function registered.\n");
+            }
+
+        } else {
+            // Process other commands
+            CLIProcessCommand(userInput, writeBuffer, sizeof(writeBuffer));
+        }
+    }
+
     return 0;
 }
