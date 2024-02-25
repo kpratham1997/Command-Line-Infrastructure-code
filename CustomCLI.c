@@ -444,6 +444,26 @@ BaseType_t prvSetCommand(char *pcWriteBuffer, size_t xWriteBufferLen, const char
 
 /* Get Command Implementation */
 BaseType_t prvGetCommand(char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString) {
+    char * pcParameter;
+    BaseType_t lParameterStringLength = 0;
+    
+    memset(pcWriteBuffer, 0, xWriteBufferLen);
+    pcParameter = ( char * ) FreeRTOS_CLIGetParameter(pcCommandString, 1, &lParameterStringLength);
+    strncpy(pcWriteBuffer, pcParameter, lParameterStringLength);
+    printf("VAMSI : Param 1- %s\n",pcWriteBuffer);
+   
+    if(strcmp(pcWriteBuffer,"temp")==0){
+        memset(pcWriteBuffer, 0, xWriteBufferLen);
+        //random number generator
+        int min=0;
+        int max=100;
+        srand(time(NULL));
+        volatile int sensor_data=min + rand() % (max - min + 1);
+        snprintf(pcWriteBuffer, xWriteBufferLen, "%d", sensor_data);
+        printf("VAMSI : Temperature is - %s\n",pcWriteBuffer);
+    }
+    
+	
    
 }
 
