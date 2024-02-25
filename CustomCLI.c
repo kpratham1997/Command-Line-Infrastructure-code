@@ -374,6 +374,9 @@ BaseType_t CLIProcessCommand(const char * const pcCommandInput, char * pcWriteBu
 	}
     
     #endif
+    
+    //new
+    pxCommand = NULL;
 
     return xReturn;
 }
