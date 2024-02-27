@@ -572,40 +572,46 @@ const char *pcReturn = NULL;
 
 /* Main Function (For Demonstration) */
 int main(void) {
-    CLIRegisterCommand(&xHelpCommand); // Register help command initially
-    printf("Welcome to Custom CLI\n");
-    printf("\n");
-    printf("Enter 'help' to get a list of registered command.\n");
-    printf("Enter 'help {commandname}' to know more about a registered command.\n");
-
+     CLIRegisterCommand(&xHelpCommand); // Register help command initially
+     printf("Welcome to Custom CLI\n");
+     printf("\n");
+     printf("1.Use register command to add a command in the system. for eg :- register set\n");
+     printf("2.Enter 'help' to get a list of registered command.\n");
+     printf("3.Enter 'help {commandname}' to know more about a registered command. for eg :- help set\n");
+     printf("\n");
+    
+    
     // Shell interface loop
     char userInput[50];
     while (1) {
-        printf("Enter a command: ");
+        printf(">>");
         fgets(userInput, sizeof(userInput), stdin);
-
-        // Remove newline character if present
+        
+        
+         // Remove newline character if present
         size_t len = strlen(userInput);
-        if (len > 0 && userInput[len - 1] == '\n') {
-            userInput[len - 1] = '\0';
-        }
-
+            if (len > 0 && userInput[len - 1] == '\n') {
+                userInput[len - 1] = '\0';
+            }
+        
         if (strncmp(userInput, "register", 8) == 0) {
-            // Check if user is admin
+             // Check if user is admin
             printf("Enter admin password: ");
             char adminPassword[20];
-            scanf("%s", adminPassword);
+            scanf("%s",adminPassword);
             getchar();
-
+            
             if (strcmp(adminPassword, IMPORTANT) != 0) {
                 printf("Invalid admin password. Command registration denied.\n");
                 continue; // Go back to the beginning of the loop
             }
-
+            
+           
+            
             // User wants to register a command
             char commandName[20];
             sscanf(userInput, "%*s %s", commandName);
-
+            
             if (strncmp(commandName, "set", 3) == 0) {
                 CLIRegisterCommand(&xSetCommand);
                 printf("Command 'set' registered successfully.\n");
@@ -615,7 +621,48 @@ int main(void) {
             } else {
                 printf("Invalid command name. No function registered.\n");
             }
-
+        
+        } else if (strncmp(userInput, "help", 4) == 0) {
+            
+            if(userInput[4]=='\0'){
+                CLIProcessCommand(userInput, writeBuffer, sizeof(writeBuffer));
+            }
+            else{
+            // User wants help for a command
+            
+            char commandName[20];
+            sscanf(userInput, "%*s %s", commandName);
+            
+            // Traverse the linked list to find the command
+            const CLI_Definition_List_Item_t *pxCommand = &xRegisteredCommands;
+            pxCommand = pxCommand->pxNext;
+            while (pxCommand != NULL) {
+                if (strncmp(commandName, pxCommand->pxCommandLineDefinition->pcCommand, strlen(pxCommand->pxCommandLineDefinition->pcCommand)) == 0) {
+                    // Command found, print its help string
+                    printf("Help for '%s' command: %s\n", pxCommand->pxCommandLineDefinition->pcCommand, pxCommand->pxCommandLineDefinition->pcHelpString);
+                    break;
+                }
+                pxCommand = pxCommand->pxNext;
+            }
+        
+            // If command not found in the list
+            if (pxCommand == NULL) {
+                printf("Invalid command name. No help available.\n");
+            }
+            
+            
+            
+            /*
+            if (strncmp(commandName, "set", 3) == 0) {
+                printf("Help for 'set' command: %s\n", xSetCommand.pcHelpString);
+            } else if (strncmp(commandName, "get", 3) == 0) {
+                printf("Help for 'get' command: %s\n", xGetCommand.pcHelpString);
+            } else {
+                printf("Invalid command name. No help available.\n");
+            }
+            */
+                
+            }
         } else {
             // Process other commands
             CLIProcessCommand(userInput, writeBuffer, sizeof(writeBuffer));
